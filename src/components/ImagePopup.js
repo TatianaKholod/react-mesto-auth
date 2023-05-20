@@ -1,6 +1,6 @@
-import usePopupClose from "../hooks/usePopupClose"
+import usePopupClose from "../hooks/usePopupClose";
 
-function ImagePopup({ card, onClose, isOpen }) {
+function ImagePopup({ card, onClose }) {
   usePopupClose(card.link, onClose);
   return (
     <div

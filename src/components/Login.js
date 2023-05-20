@@ -1,8 +1,12 @@
+import AuthForm from "./AuthForm";
+
 function Login() {
   return (
-    <header className="header">
-      <h2>Привет! Это авторизация.</h2>
-    </header>
+    <AuthForm
+      caption="Вход"
+      textButton="Войти"
+      textLink=""
+    />
   );
 }
 
