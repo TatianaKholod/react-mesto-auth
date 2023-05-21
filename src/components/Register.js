@@ -1,35 +1,29 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import InfoTooltip from "./InfoTooltip";
-import imageCheck from "../images/auth-check.svg";
-import imageError from "../images/auth-err.svg";
+import { register } from "../utils/Auth";
 
-function Register() {
-  const [isMessageOpen, setIsMessageOpen] = useState(false);
+function Register({ onOpenMsg }) {
+  const navigate = useNavigate();
 
-  function handleSubmit() {
-    setIsMessageOpen(true);
-  }
-
-  function onMessageClose() {
-    setIsMessageOpen(false);
+  function handleSubmit(values) {
+    register(values["email-input"], values["password-input"])
+      .then(() => {
+        navigate("/sign-in", { replace: true });
+        onOpenMsg(false);
+      })
+      .catch((err) => {
+        console.log("Ошибка регистрации " + err);
+        onOpenMsg(true);
+      });
   }
 
   return (
-    <>
-      <AuthForm
-        caption="Регистрация"
-        textButton="Зарегистрироваться"
-        textLink="Уже зарегистрированы? Войти"
-        handleSubmit={handleSubmit}
-      />
-
-      <InfoTooltip
-        image={true ? imageCheck : imageError}
-        isOpen={isMessageOpen}
-        onClose={onMessageClose}
-      />
-    </>
+    <AuthForm
+      caption="Регистрация"
+      textButton="Зарегистрироваться"
+      textLink="Уже зарегистрированы? Войти"
+      handleSubmit={handleSubmit}
+    />
   );
 }
 

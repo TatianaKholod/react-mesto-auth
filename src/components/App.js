@@ -10,7 +10,10 @@ import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
 import ProtectedRoute from "./ProtectedRoute";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+//для попапов авторизации
+import InfoTooltip from "./InfoTooltip";
+//для навигации
+import { Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 
@@ -24,6 +27,8 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isConfirmPopup, setIsConfirmPopup] = useState(false);
+  const [isOpenAuthMsg, setIsOpenAuthMsg] = useState(false);
+  const [isErrorAuth, setIsErrorAuth] = useState(false);
 
   const [currentUser, setCurrentUser] = useState({
     name: "",
@@ -118,11 +123,17 @@ function App() {
     setAddPlacePopupOpen(true);
   }
 
+  function handleIsOpenAuthMsg(isErr) {
+    setIsOpenAuthMsg(true);
+    setIsErrorAuth(isErr);
+  }
+
   function closeAllPopups() {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setIsConfirmPopup(false);
+    setIsOpenAuthMsg(false);
     setSelectedCard({ name: "", link: "" });
   }
   function handleCardClick(card) {
@@ -163,7 +174,10 @@ function App() {
         <div className="page">
           <Header logo={logo} />
           <Routes>
-            <Route path="/sign-up" element={<Register />} />
+            <Route
+              path="/sign-up"
+              element={<Register onOpenMsg={handleIsOpenAuthMsg} />}
+            />
             <Route path="/sign-in" element={<Login />} />
 
             <Route
@@ -218,6 +232,11 @@ function App() {
             />
             <Route path="*" element={<h2>Нет такой страницы</h2>} />
           </Routes>
+          <InfoTooltip
+            isError={isErrorAuth}
+            isOpen={isOpenAuthMsg}
+            onClose={closeAllPopups}
+          />
         </div>
       </div>
     </CurrentUserContext.Provider>

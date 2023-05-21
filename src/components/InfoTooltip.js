@@ -1,7 +1,11 @@
 import usePopupClose from "../hooks/usePopupClose";
+import imageCheck from "../images/auth-check.svg";
+import imageError from "../images/auth-err.svg";
 
-function InfoTooltip({ isOpen, onClose, image }) {
+function InfoTooltip({ isError, isOpen, onClose }) {
   usePopupClose(isOpen, onClose);
+  const msgError = "Что-то пошло не так! Попробуйте ещё раз.";
+  const msgCheck = "Вы успешно зарегистрировались!";
   return (
     <div className={`popup ${isOpen ? "popup_opened" : ""}`}>
       <div className="popup__container popup__container_purpose_message">
@@ -12,8 +16,8 @@ function InfoTooltip({ isOpen, onClose, image }) {
           type="button"
           onClick={onClose}
         />
-        <img className="" src={image} alt={"ku-ku"} />
-        <h2>ku-ku</h2>
+        <img className="" src={isError ? imageError : imageCheck} />
+        <p>{isError ? msgError : msgCheck}</p>
       </div>
     </div>
   );
