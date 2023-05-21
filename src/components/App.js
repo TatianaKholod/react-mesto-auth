@@ -40,7 +40,7 @@ function App() {
   const [idCardDelete, setIdCardDelete] = useState(null);
   const [selectedCard, setSelectedCard] = useState({ name: "", link: "" });
 
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     api
@@ -128,6 +128,10 @@ function App() {
     setIsErrorAuth(isErr);
   }
 
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
   function closeAllPopups() {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
@@ -178,7 +182,10 @@ function App() {
               path="/sign-up"
               element={<Register onOpenMsg={handleIsOpenAuthMsg} />}
             />
-            <Route path="/sign-in" element={<Login />} />
+            <Route
+              path="/sign-in"
+              element={<Login handleLogin={handleLogin} />}
+            />
 
             <Route
               path="/"
