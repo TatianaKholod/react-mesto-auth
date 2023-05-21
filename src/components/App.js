@@ -210,7 +210,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
         <div className="page">
-          <Header logo={logo} nameUsser={nameUsser} onClickOut={signOut} />
+          <Header logo={logo} nameUsser={nameUsser} onSignOut={signOut} />
           <Routes>
             <Route
               path="/sign-up"

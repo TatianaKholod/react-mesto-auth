@@ -5,7 +5,7 @@ import { register } from "../utils/Auth";
 function Register({ onOpenMsg }) {
   const navigate = useNavigate();
 
-  function handleSubmit(values) {
+  function onRegister(values) {
     register(values["email-input"], values["password-input"])
       .then(() => {
         navigate("/sign-in");
@@ -22,7 +22,7 @@ function Register({ onOpenMsg }) {
       caption="Регистрация"
       textButton="Зарегистрироваться"
       textLink="Уже зарегистрированы? Войти"
-      handleSubmit={handleSubmit}
+      handleSubmit={onRegister}
     />
   );
 }

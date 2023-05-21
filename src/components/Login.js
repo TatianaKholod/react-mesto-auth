@@ -5,7 +5,7 @@ import { autorize } from "../utils/Auth";
 function Login({handleLogin}) {
   const navigate = useNavigate();
 
-  function handleSubmit(values) {
+  function onLogin(values) {
     autorize(values["email-input"], values["password-input"])
       .then((data) => {
         if (data.token) {
@@ -14,7 +14,7 @@ function Login({handleLogin}) {
         }
         return Promise.reject(`Ошибка: данные без токена!`);
       })
-      .then((data) => {
+      .then(() => {
         handleLogin(values["email-input"]);
         navigate("/");
       })
@@ -28,7 +28,7 @@ function Login({handleLogin}) {
       caption="Вход"
       textButton="Войти"
       textLink=""
-      handleSubmit={handleSubmit}
+      handleSubmit={onLogin}
     />
   );
 }

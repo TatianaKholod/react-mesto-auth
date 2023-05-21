@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-function Header({ logo, nameUsser, onClickOut }) {
+function Header({ logo, nameUsser, onSignOut }) {
   const location = useLocation();
   const [headerLink, setHeaderLink] = useState({ link: "", name: "" });
 
@@ -36,7 +36,7 @@ function Header({ logo, nameUsser, onClickOut }) {
         <Link
           className="header__link link"
           to={headerLink.link}
-          onClick={onClickOut}
+          onClick={onSignOut}
         >
           {headerLink.name}
         </Link>
