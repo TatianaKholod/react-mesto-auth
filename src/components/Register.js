@@ -8,7 +8,7 @@ function Register({ onOpenMsg }) {
   function handleSubmit(values) {
     register(values["email-input"], values["password-input"])
       .then(() => {
-        navigate("/sign-in", { replace: true });
+        navigate("/sign-in");
         onOpenMsg(false);
       })
       .catch((err) => {

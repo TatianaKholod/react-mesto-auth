@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-function Header({ logo }) {
+function Header({ logo, nameUsser, onClickOut }) {
   const location = useLocation();
   const [headerLink, setHeaderLink] = useState({ link: "", name: "" });
 
@@ -31,9 +31,16 @@ function Header({ logo }) {
           src={logo}
         />
       </Link>
-      <Link className="header__link link" to={headerLink.link}>
-        {headerLink.name}
-      </Link>
+      <div className="header__container">
+        <p className="header__name">{nameUsser}</p>
+        <Link
+          className="header__link link"
+          to={headerLink.link}
+          onClick={onClickOut}
+        >
+          {headerLink.name}
+        </Link>
+      </div>
     </header>
   );
 }

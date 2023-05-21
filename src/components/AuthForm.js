@@ -17,7 +17,12 @@ function AuthForm({ caption, textButton, textLink, handleSubmit }) {
     handleSubmit(values);
   }
   return (
-    <form name="register" className="auth-form" onSubmit={onSubmit}>
+    <form
+      name="register"
+      className="auth-form"
+      onSubmit={onSubmit}
+      autoComplete="off"
+    >
       <h2 className="auth-form__caption">{caption}</h2>
       <input
         name="email-input"

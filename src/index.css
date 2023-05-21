@@ -10,6 +10,8 @@
 @import "./blocks/header/header.css";
 @import "./blocks/header/__logo/header__logo.css";
 @import "./blocks/header/__link/header__link.css";
+@import "./blocks/header/__name/header__name.css";
+@import "./blocks/header/__container/header__container.css";
 /*profile*/
 @import "./blocks/profile/profile.css";
 @import "./blocks/profile/__avatar/profile__avatar.css";

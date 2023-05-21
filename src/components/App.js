@@ -10,10 +10,11 @@ import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
 import ProtectedRoute from "./ProtectedRoute";
 
-//для попапов авторизации
+//для авторизации
 import InfoTooltip from "./InfoTooltip";
+import { getToken } from "../utils/Auth";
 //для навигации
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 
@@ -41,6 +42,9 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({ name: "", link: "" });
 
   const [loggedIn, setLoggedIn] = useState(false);
+  const [nameUsser, setNameUsser] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -60,6 +64,29 @@ function App() {
       .catch((err) => {
         console.log("Ошибка инициализации данных профиля" + err);
       });
+  }, []);
+
+  function checkToken() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      getToken(token)
+        .then((data) => {
+          if (data) {
+            setLoggedIn(true);
+            navigate("/");
+            setNameUsser(data.data.email);
+          } else {
+            setLoggedIn(false);
+          }
+        })
+        .catch((err) => {
+          console.log("Ошибка " + err);
+        });
+    }
+  }
+
+  useEffect(() => {
+    checkToken();
   }, []);
 
   function handleCardLike(card) {
@@ -128,8 +155,9 @@ function App() {
     setIsErrorAuth(isErr);
   }
 
-  function handleLogin() {
+  function handleLogin(email) {
     setLoggedIn(true);
+    setNameUsser(email);
   }
 
   function closeAllPopups() {
@@ -172,11 +200,17 @@ function App() {
       .finally(() => setIsLoading(false));
   }
 
+  function signOut() {
+    localStorage.removeItem("token");
+    navigate("/sign-in");
+    setLoggedIn(false);
+    setNameUsser("");
+  }
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
         <div className="page">
-          <Header logo={logo} />
+          <Header logo={logo} nameUsser={nameUsser} onClickOut={signOut} />
           <Routes>
             <Route
               path="/sign-up"

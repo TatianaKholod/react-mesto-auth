@@ -14,8 +14,8 @@ function Login({handleLogin}) {
         }
         return Promise.reject(`Ошибка: данные без токена!`);
       })
-      .then(() => {
-        handleLogin();
+      .then((data) => {
+        handleLogin(values["email-input"]);
         navigate("/");
       })
       .catch((err) => {
