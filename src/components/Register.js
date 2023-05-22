@@ -1,20 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import { register } from "../utils/Auth";
 
-function Register({ onOpenMsg }) {
-  const navigate = useNavigate();
-
+function Register({ handleSubmitRegister }) {
   function onRegister(values) {
-    register(values["email-input"], values["password-input"])
-      .then(() => {
-        navigate("/sign-in");
-        onOpenMsg(false);
-      })
-      .catch((err) => {
-        console.log("Ошибка регистрации " + err);
-        onOpenMsg(true);
-      });
+    handleSubmitRegister(values["email-input"], values["password-input"]);
   }
 
   return (

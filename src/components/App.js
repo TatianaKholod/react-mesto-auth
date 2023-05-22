@@ -12,7 +12,8 @@ import ProtectedRoute from "./ProtectedRoute";
 
 //для авторизации
 import InfoTooltip from "./InfoTooltip";
-import { getToken } from "../utils/Auth";
+import * as authApi from "../utils/Auth";
+
 //для навигации
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./Login";
@@ -30,6 +31,7 @@ function App() {
   const [isConfirmPopup, setIsConfirmPopup] = useState(false);
   const [isOpenAuthMsg, setIsOpenAuthMsg] = useState(false);
   const [isErrorAuth, setIsErrorAuth] = useState(false);
+  const [msgErrorAuth, setmsgErrorAuth] = useState("");
 
   const [currentUser, setCurrentUser] = useState({
     name: "",
@@ -47,15 +49,17 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!loggedIn) return;
     api
       .getInitialCards()
       .then((dataCards) => setCards(dataCards))
       .catch((err) => {
         console.log("Ошибка инициализации данных карточек" + err);
       });
-  }, []);
+  }, [loggedIn]);
 
   useEffect(() => {
+    if (!loggedIn) return;
     api
       .getInitProfile()
       .then((userData) => {
@@ -64,12 +68,13 @@ function App() {
       .catch((err) => {
         console.log("Ошибка инициализации данных профиля" + err);
       });
-  }, []);
+  }, [loggedIn]);
 
   function checkToken() {
     const token = localStorage.getItem("token");
     if (token) {
-      getToken(token)
+      authApi
+        .getToken(token)
         .then((data) => {
           if (data) {
             setLoggedIn(true);
@@ -88,6 +93,63 @@ function App() {
   useEffect(() => {
     checkToken();
   }, []);
+
+  function handleSubmitRegister(email, pwd) {
+    authApi
+      .register(email, pwd)
+      .then(() => {
+        navigate("/sign-in");
+        handleIsOpenAuthMsg(false);
+      })
+      .catch((err) => {
+        console.log("Ошибка регистрации " + err);
+        handleIsOpenAuthMsg(true);
+      });
+  }
+
+  function handleSubmitLogin(email, pwd) {
+    authApi
+      .autorize(email, pwd)
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          return data;
+        } else {
+          handleIsOpenAuthMsg(true);
+          return Promise.reject(`Ошибка: данные без токена!`);
+        }
+      })
+      .then(() => {
+        handleLogin(email);
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log("Ошибка авторизации " + err);
+        handleIsOpenAuthMsg(true);
+      });
+  }
+
+  const handleIsOpenAuthMsg = (isErr) => {
+    setIsOpenAuthMsg(true);
+    setIsErrorAuth(isErr);
+    setmsgErrorAuth(
+      isErr
+        ? "Что-то пошло не так! Попробуйте ещё раз."
+        : "Вы успешно зарегистрировались!"
+    );
+  };
+
+  const handleLogin = (email) => {
+    setLoggedIn(true);
+    setNameUsser(email);
+  };
+
+  function signOut() {
+    localStorage.removeItem("token");
+    navigate("/sign-in");
+    setLoggedIn(false);
+    setNameUsser("");
+  }
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
@@ -150,16 +212,6 @@ function App() {
     setAddPlacePopupOpen(true);
   }
 
-  function handleIsOpenAuthMsg(isErr) {
-    setIsOpenAuthMsg(true);
-    setIsErrorAuth(isErr);
-  }
-
-  function handleLogin(email) {
-    setLoggedIn(true);
-    setNameUsser(email);
-  }
-
   function closeAllPopups() {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
@@ -200,12 +252,6 @@ function App() {
       .finally(() => setIsLoading(false));
   }
 
-  function signOut() {
-    localStorage.removeItem("token");
-    navigate("/sign-in");
-    setLoggedIn(false);
-    setNameUsser("");
-  }
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
@@ -214,11 +260,12 @@ function App() {
           <Routes>
             <Route
               path="/sign-up"
-              element={<Register onOpenMsg={handleIsOpenAuthMsg} />}
+              element={<Register handleSubmitRegister={handleSubmitRegister} />}
             />
+
             <Route
               path="/sign-in"
-              element={<Login handleLogin={handleLogin} />}
+              element={<Login handleSubmitLogin={handleSubmitLogin} />}
             />
 
             <Route
@@ -238,34 +285,6 @@ function App() {
                         onCardDelete={handleCardDelete}
                       />
                       <Footer />
-                      <EditProfilePopup
-                        isOpen={isEditProfilePopupOpen}
-                        stateIsLoading={isLoading}
-                        onClose={closeAllPopups}
-                        onUpdateUser={handleUpdateUser}
-                      />
-                      <EditAvatarPopup
-                        isOpen={isEditAvatarPopupOpen}
-                        stateIsLoading={isLoading}
-                        onClose={closeAllPopups}
-                        onUpdateAvatar={handleUpdateAvatar}
-                      />
-                      <AddPlacePopup
-                        isOpen={isAddPlacePopupOpen}
-                        stateIsLoading={isLoading}
-                        onClose={closeAllPopups}
-                        onAddPlace={handleAddPlaceSubmit}
-                      />
-                      <ConfirmPopup
-                        isOpen={isConfirmPopup}
-                        stateIsLoading={isLoading}
-                        onClose={closeAllPopups}
-                        onConfirmDelete={handleConfirmCardDelete}
-                      />
-                      <ImagePopup
-                        card={selectedCard}
-                        onClose={closeAllPopups}
-                      />
                     </>
                   }
                 />
@@ -273,10 +292,42 @@ function App() {
             />
             <Route path="*" element={<h2>Нет такой страницы</h2>} />
           </Routes>
+
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            stateIsLoading={isLoading}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+          />
+
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            stateIsLoading={isLoading}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+          />
+
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            stateIsLoading={isLoading}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+          />
+
+          <ConfirmPopup
+            isOpen={isConfirmPopup}
+            stateIsLoading={isLoading}
+            onClose={closeAllPopups}
+            onConfirmDelete={handleConfirmCardDelete}
+          />
+
+          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+
           <InfoTooltip
             isError={isErrorAuth}
             isOpen={isOpenAuthMsg}
             onClose={closeAllPopups}
+            msgErrorAuth={msgErrorAuth}
           />
         </div>
       </div>

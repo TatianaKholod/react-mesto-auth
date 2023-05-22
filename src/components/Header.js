@@ -1,27 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, Route, Routes } from "react-router-dom";
 
 function Header({ logo, nameUsser, onSignOut }) {
-  const location = useLocation();
-  const [headerLink, setHeaderLink] = useState({ link: "", name: "" });
-
-  useEffect(() => {
-    switch (location.pathname) {
-      case "/sign-up":
-        setHeaderLink({ link: "/sign-in", name: "Войти" });
-        break;
-      case "/sign-in":
-        setHeaderLink({ link: "/sign-up", name: "Регистрация" });
-        break;
-      case "/":
-        setHeaderLink({ link: "/sign-in", name: "Выйти" });
-        break;
-      default:
-        setHeaderLink({ link: "", name: "" });
-        break;
-    }
-  }, [location]);
-
   return (
     <header className="header">
       <Link className="link" to="/">
@@ -33,13 +12,36 @@ function Header({ logo, nameUsser, onSignOut }) {
       </Link>
       <div className="header__container">
         <p className="header__name">{nameUsser}</p>
-        <Link
-          className="header__link link"
-          to={headerLink.link}
-          onClick={onSignOut}
-        >
-          {headerLink.name}
-        </Link>
+        <Routes>
+          <Route
+            path="/sign-up"
+            element={
+              <Link to="/sign-in" className="header__link link">
+                Войти
+              </Link>
+            }
+          />
+          <Route
+            path="/sign-in"
+            element={
+              <Link to="/sign-up" className="header__link link">
+                Регистрация
+              </Link>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <Link
+                to="/sign-in"
+                className="header__link link"
+                onClick={onSignOut}
+              >
+                Выйти
+              </Link>
+            }
+          />
+        </Routes>
       </div>
     </header>
   );
